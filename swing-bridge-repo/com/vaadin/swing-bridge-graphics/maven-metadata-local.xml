@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.vaadin</groupId>
+  <artifactId>swing-bridge-graphics</artifactId>
+  <versioning>
+    <release>0.0.1-SNAPSHOT-local</release>
+    <versions>
+      <version>0.0.1-SNAPSHOT-local</version>
+    </versions>
+    <lastUpdated>20260122095153</lastUpdated>
+  </versioning>
+</metadata>
