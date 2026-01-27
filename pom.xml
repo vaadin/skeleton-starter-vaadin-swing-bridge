@@ -11,6 +11,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <vaadin.version>24.8.13</vaadin.version>
+        <swing-bridge.version>0.0.1-SNAPSHOT</swing-bridge.version>
     </properties>
     
     <parent>
@@ -36,12 +37,12 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>swing-bridge-graphics</artifactId>
-            <version>0.0.1-SNAPSHOT-local</version>
+            <version>${swing-bridge.version}-local</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>swing-bridge-flow</artifactId>
-            <version>0.0.1-SNAPSHOT-local</version>
+            <version>${swing-bridge.version}-local</version>
         </dependency>
 
         <dependency>
@@ -81,8 +82,8 @@
                 <configuration>
                     <!-- all JVM flags as one space-separated string -->
                     <jvmArguments>
-                        --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-0.0.1-SNAPSHOT.jar
-                        -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/0.0.1-SNAPSHOT-local/swing-bridge-graphics-0.0.1-SNAPSHOT-local.jar
+                        --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-${swing-bridge.version}.jar
+                        -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/${swing-bridge.version}-local/swing-bridge-graphics-${swing-bridge.version}-local.jar
                         --add-reads java.desktop=ALL-UNNAMED
                         --add-exports=java.desktop/sun.font=ALL-UNNAMED
                         --add-exports=java.desktop/sun.awt=ALL-UNNAMED
@@ -150,8 +151,8 @@
                         <configuration>
                             <!-- all JVM flags as one space-separated string -->
                             <jvmArguments>
-                                --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-0.0.1-SNAPSHOT.jar
-                                -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/0.0.1-SNAPSHOT-local/swing-bridge-graphics-0.0.1-SNAPSHOT-local.jar
+                                --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-${swing-bridge.version}.jar
+                                -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/${swing-bridge.version}-local/swing-bridge-graphics-${swing-bridge.version}-local.jar
                                 --add-reads java.desktop=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.font=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.awt=ALL-UNNAMED
