@@ -4,11 +4,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.modernization.swing.bridge.component.SwingBridge;
 
-@Route("")
-public class CrmView extends VerticalLayout {
-    private static final String MAIN_CLASS = "com.swingcrm.SwingCrmApplication";
+@Route(value = "")
+public class WarehouseView extends VerticalLayout {
+    private static final String MAIN_CLASS = "com.mycompany.swingapp.warehouse.WarehouseInventoryApp2";
 
-    public CrmView() {
+    public WarehouseView() {
         add(new SwingBridge(MAIN_CLASS));
     }
+
 }
