@@ -4,6 +4,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.vaadin</groupId>
   <artifactId>swing-bridge-flow</artifactId>
-  <version>0.0.1-SNAPSHOT-local</version>
+  <version>1.0.0-alpha6-local</version>
   <description>POM was created from install:install-file</description>
 </project>
