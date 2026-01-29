@@ -4,6 +4,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.vaadin</groupId>
   <artifactId>swing-bridge-graphics</artifactId>
-  <version>1.0.0-alpha7-local</version>
+  <version>1.0.0-alpha8-local</version>
   <description>POM was created from install:install-file</description>
 </project>
