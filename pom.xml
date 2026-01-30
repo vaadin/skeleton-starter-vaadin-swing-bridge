@@ -10,7 +10,7 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <vaadin.version>24.8.13</vaadin.version>
+        <vaadin.version>24.9.10</vaadin.version>
         <swing-bridge.version>1.0.0-alpha9</swing-bridge.version>
     </properties>
     
