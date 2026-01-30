@@ -38,8 +38,8 @@ mvn clean package -Pproduction
 and the result is a Spring-Boot fat jar that can be run with:
 ```
 java \
-  --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-1.0.0-alpha8.jar \
-  -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/1.0.0-alpha8-local/swing-bridge-graphics-1.0.0-alpha8-local.jar \
+  --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-1.0.0-alpha9.jar \
+  -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/1.0.0-alpha9-local/swing-bridge-graphics-1.0.0-alpha9-local.jar \
   --add-reads java.desktop=ALL-UNNAMED \
   --add-exports=java.desktop/sun.font=ALL-UNNAMED \
   --add-exports=java.desktop/sun.awt=ALL-UNNAMED \
