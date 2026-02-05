@@ -1,12 +1,12 @@
 # Overview
-This minimal skeleton provides an example of utilizing **Vaadin Swing Bridge** technology that runs existing Swing applications within a **Vaadin** to make them accessible for the end users through web in no time.
+This minimal skeleton provides an example of using **Vaadin Swing Bridge** technology that runs existing Swing applications within a **Vaadin** to make them accessible for the end users through the web in no time.
 
 This project uses maven for managing the dependencies and configurations.
 Similar to any other Vaadin projects, you can run it from commandline `mvn clean spring-boot:run`.
 For further instructions of building for productions, please refer to the [Production Build](#production-build) section.
 
-For making the initial setup straightforward, Vaadin Swing Bridge runtime assumes some configurations are in places. 
-This cpnfigurations are mostly about where are the Swing application's jar file(s) and dependencies are located. 
+For making the initial setup straightforward, Vaadin Swing Bridge runtime assumes some configurations are in place. 
+These configurations are mostly about where the Swing application's jar file(s) and dependencies are located. 
 Please refer to the [Important Directories](#important-directories) to make sure you have a smooth experience. :+1:
 
 ## Important Directories:
@@ -38,8 +38,8 @@ mvn clean package -Pproduction
 and the result is a Spring-Boot fat jar that can be run with:
 ```
 java \
-  --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-1.0.0-alpha9.jar \
-  -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/1.0.0-alpha9-local/swing-bridge-graphics-1.0.0-alpha9-local.jar \
+  --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-1.0.0-rc2.jar \
+  -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/1.0.0-rc2-local/swing-bridge-graphics-1.0.0-rc2-local.jar \
   --add-reads java.desktop=ALL-UNNAMED \
   --add-exports=java.desktop/sun.font=ALL-UNNAMED \
   --add-exports=java.desktop/sun.awt=ALL-UNNAMED \
