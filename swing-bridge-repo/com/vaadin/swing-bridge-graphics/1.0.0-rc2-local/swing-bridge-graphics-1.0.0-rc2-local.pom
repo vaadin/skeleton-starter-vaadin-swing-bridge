@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.vaadin</groupId>
-  <artifactId>swing-bridge-flow</artifactId>
-  <version>1.0.0-alpha9-local</version>
+  <artifactId>swing-bridge-graphics</artifactId>
+  <version>1.0.0-rc2-local</version>
   <description>POM was created from install:install-file</description>
 </project>

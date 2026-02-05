@@ -3,10 +3,10 @@
   <groupId>com.vaadin</groupId>
   <artifactId>swing-bridge-graphics</artifactId>
   <versioning>
-    <release>1.0.0-alpha9-local</release>
+    <release>1.0.0-rc2-local</release>
     <versions>
-      <version>1.0.0-alpha9-local</version>
+      <version>1.0.0-rc2-local</version>
     </versions>
-    <lastUpdated>20260130083318</lastUpdated>
+    <lastUpdated>20260205085837</lastUpdated>
   </versioning>
 </metadata>
