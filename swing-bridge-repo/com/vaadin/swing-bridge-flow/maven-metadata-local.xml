@@ -3,10 +3,10 @@
   <groupId>com.vaadin</groupId>
   <artifactId>swing-bridge-flow</artifactId>
   <versioning>
-    <release>1.0.0-rc2-local</release>
+    <release>1.0.0-rc3-local</release>
     <versions>
-      <version>1.0.0-rc2-local</version>
+      <version>1.0.0-rc3-local</version>
     </versions>
-    <lastUpdated>20260205085833</lastUpdated>
+    <lastUpdated>20260217070452</lastUpdated>
   </versioning>
 </metadata>
