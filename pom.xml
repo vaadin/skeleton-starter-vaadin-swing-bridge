@@ -12,6 +12,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <vaadin.version>24.9.10</vaadin.version>
         <swing-bridge.version>1.0.0-rc4</swing-bridge.version>
+        <swing-bridge.path>${settings.localRepository}/com/vaadin</swing-bridge.path>
     </properties>
     
     <parent>
@@ -34,6 +35,11 @@
     </dependencyManagement>
     
     <dependencies>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>swing-bridge-patch</artifactId>
+            <version>${swing-bridge.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>swing-bridge-graphics</artifactId>
@@ -82,8 +88,8 @@
                 <configuration>
                     <!-- all JVM flags as one space-separated string -->
                     <jvmArguments>
-                        --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-${swing-bridge.version}.jar
-                        -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/${swing-bridge.version}-local/swing-bridge-graphics-${swing-bridge.version}-local.jar
+                        --patch-module java.desktop=${swing-bridge.path}/swing-bridge-patch/${swing-bridge.version}/swing-bridge-patch-${swing-bridge.version}.jar
+                        -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}-local/swing-bridge-graphics-${swing-bridge.version}-local.jar
                         --add-reads java.desktop=ALL-UNNAMED
                         --add-exports=java.desktop/sun.font=ALL-UNNAMED
                         --add-exports=java.desktop/sun.awt=ALL-UNNAMED
@@ -178,12 +184,6 @@
         </profile>
     </profiles>
     
-    <repositories>
-        <repository>
-            <id>project-local</id>
-            <url>file://${project.basedir}/swing-bridge-repo</url>
-        </repository>
-    </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>vaadin-prereleases</id>
