@@ -43,12 +43,12 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>swing-bridge-graphics</artifactId>
-            <version>${swing-bridge.version}-local</version>
+            <version>${swing-bridge.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>swing-bridge-flow</artifactId>
-            <version>${swing-bridge.version}-local</version>
+            <version>${swing-bridge.version}</version>
         </dependency>
 
         <dependency>
@@ -89,7 +89,7 @@
                     <!-- all JVM flags as one space-separated string -->
                     <jvmArguments>
                         --patch-module java.desktop=${swing-bridge.path}/swing-bridge-patch/${swing-bridge.version}/swing-bridge-patch-${swing-bridge.version}.jar
-                        -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}-local/swing-bridge-graphics-${swing-bridge.version}-local.jar
+                        -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}/swing-bridge-graphics-${swing-bridge.version}.jar
                         --add-reads java.desktop=ALL-UNNAMED
                         --add-exports=java.desktop/sun.font=ALL-UNNAMED
                         --add-exports=java.desktop/sun.awt=ALL-UNNAMED
@@ -157,8 +157,8 @@
                         <configuration>
                             <!-- all JVM flags as one space-separated string -->
                             <jvmArguments>
-                                --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-${swing-bridge.version}.jar
-                                -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/${swing-bridge.version}-local/swing-bridge-graphics-${swing-bridge.version}-local.jar
+                                --patch-module java.desktop=${swing-bridge.path}/swing-bridge-patch/${swing-bridge.version}/swing-bridge-patch-${swing-bridge.version}.jar
+                                -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}/swing-bridge-graphics-${swing-bridge.version}.jar
                                 --add-reads java.desktop=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.font=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.awt=ALL-UNNAMED
