@@ -9,15 +9,15 @@
     
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <vaadin.version>24.9.10</vaadin.version>
-        <swing-bridge.version>1.0.0-rc5</swing-bridge.version>
+        <vaadin.version>25.1.0-beta1</vaadin.version>
+        <swing-bridge.version>1.0.0</swing-bridge.version>
+        <swing-bridge.path>${settings.localRepository}/com/vaadin</swing-bridge.path>
     </properties>
     
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
+        <version>4.0.3</version>
         <relativePath/>
     </parent>
 
@@ -36,13 +36,24 @@
     <dependencies>
         <dependency>
             <groupId>com.vaadin</groupId>
+            <artifactId>swing-bridge-patch</artifactId>
+            <version>${swing-bridge.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
             <artifactId>swing-bridge-graphics</artifactId>
-            <version>${swing-bridge.version}-local</version>
+            <version>${swing-bridge.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>swing-bridge-flow</artifactId>
-            <version>${swing-bridge.version}-local</version>
+            <version>${swing-bridge.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j2-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -54,7 +65,11 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-dev</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -82,9 +97,9 @@
                 <configuration>
                     <!-- all JVM flags as one space-separated string -->
                     <jvmArguments>
-                        --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-${swing-bridge.version}.jar
-                        -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/${swing-bridge.version}-local/swing-bridge-graphics-${swing-bridge.version}-local.jar
-                        --add-reads java.desktop=ALL-UNNAMED
+                        --patch-module java.desktop=${swing-bridge.path}/swing-bridge-patch/${swing-bridge.version}/swing-bridge-patch-${swing-bridge.version}.jar
+                        -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}/swing-bridge-graphics-${swing-bridge.version}.jar
+                        --add-reads=java.desktop=ALL-UNNAMED
                         --add-exports=java.desktop/sun.font=ALL-UNNAMED
                         --add-exports=java.desktop/sun.awt=ALL-UNNAMED
                         --add-exports=java.desktop/sun.awt.dnd=ALL-UNNAMED
@@ -151,9 +166,9 @@
                         <configuration>
                             <!-- all JVM flags as one space-separated string -->
                             <jvmArguments>
-                                --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-${swing-bridge.version}.jar
-                                -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/${swing-bridge.version}-local/swing-bridge-graphics-${swing-bridge.version}-local.jar
-                                --add-reads java.desktop=ALL-UNNAMED
+                                --patch-module java.desktop=${swing-bridge.path}/swing-bridge-patch/${swing-bridge.version}/swing-bridge-patch-${swing-bridge.version}.jar
+                                -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}/swing-bridge-graphics-${swing-bridge.version}.jar
+                                --add-reads=java.desktop=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.font=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.awt=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.awt.dnd=ALL-UNNAMED
@@ -177,17 +192,4 @@
             </build>
         </profile>
     </profiles>
-    
-    <repositories>
-        <repository>
-            <id>project-local</id>
-            <url>file://${project.basedir}/swing-bridge-repo</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>vaadin-prereleases</id>
-            <url>https://maven.vaadin.com/vaadin-prereleases</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
