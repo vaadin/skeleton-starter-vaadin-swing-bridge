@@ -32,14 +32,24 @@ mvn clean spring-boot:run
 ## Production Build
 Also, similar to any spring-boot Vaadin application, it is possible to build it using:
 ```
-mvn clean package -Pproduction
+mvn clean package
 ```
 
-and the result is a Spring-Boot fat jar that can be run with:
+and the result is a Spring-Boot fat jar that can be run with the commands below.
+The `<MAVEN_REPO>` placeholder refers to your local Maven repository path:
+- **Linux/macOS**: `$HOME/.m2/repository` (do **not** use `~` as it won't expand inside JVM flags like `-Xbootclasspath/a:`)
+- **Windows**: `C:\Users\<your-username>\.m2\repository`
+
+If you have a custom repository location, you can find the exact path by running:
 ```
+mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
+```
+
+**Linux/macOS:**
+```bash
 java \
-  --patch-module java.desktop=./swing-bridge-repo/raw/swing-bridge-patch-1.0.0-rc2.jar \
-  -Xbootclasspath/a:./swing-bridge-repo/com/vaadin/swing-bridge-graphics/1.0.0-rc2-local/swing-bridge-graphics-1.0.0-rc2-local.jar \
+  --patch-module java.desktop=<MAVEN_REPO>/com/vaadin/swing-bridge-patch/1.0.0/swing-bridge-patch-1.0.0.jar \
+  -Xbootclasspath/a:<MAVEN_REPO>/com/vaadin/swing-bridge-graphics/1.0.0/swing-bridge-graphics-1.0.0.jar \
   --add-reads java.desktop=ALL-UNNAMED \
   --add-exports=java.desktop/sun.font=ALL-UNNAMED \
   --add-exports=java.desktop/sun.awt=ALL-UNNAMED \
@@ -60,4 +70,31 @@ java \
   -Djava.awt.headless=false \
   -Dapplibs.dir=./applibs \
   -jar target/skeleton-starter-vaadin-swing-bridge-1.0-SNAPSHOT.jar
+```
+
+**Windows (Command Prompt):**
+```cmd
+java ^
+  --patch-module java.desktop=<MAVEN_REPO>\com\vaadin\swing-bridge-patch\1.0.0\swing-bridge-patch-1.0.0.jar ^
+  -Xbootclasspath/a:<MAVEN_REPO>\com\vaadin\swing-bridge-graphics\1.0.0\swing-bridge-graphics-1.0.0.jar ^
+  --add-reads java.desktop=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.font=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.awt=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.awt.dnd=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.awt.dnd.peer=ALL-UNNAMED ^
+  --add-exports=java.base/sun.nio.cs=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.java2d=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.java2d.pipe=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.awt.datatransfer=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.awt.image=ALL-UNNAMED ^
+  --add-exports=java.desktop/java.awt.peer=ALL-UNNAMED ^
+  --add-exports=java.desktop/java.awt.dnd=ALL-UNNAMED ^
+  --add-exports=java.desktop/java.awt.dnd.peer=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.print=ALL-UNNAMED ^
+  --add-exports=java.desktop/sun.swing=ALL-UNNAMED ^
+  --add-opens=java.desktop/java.awt.event=ALL-UNNAMED ^
+  --add-opens=java.desktop/sun.awt=ALL-UNNAMED ^
+  -Djava.awt.headless=false ^
+  -Dapplibs.dir=.\applibs ^
+  -jar target\skeleton-starter-vaadin-swing-bridge-1.0-SNAPSHOT.jar
 ```
