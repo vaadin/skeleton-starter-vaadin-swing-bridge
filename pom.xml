@@ -10,15 +10,15 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <vaadin.version>24.9.10</vaadin.version>
-        <swing-bridge.version>1.0.0-rc4</swing-bridge.version>
+        <vaadin.version>25.1.0-beta1</vaadin.version>
+        <swing-bridge.version>1.0.0</swing-bridge.version>
         <swing-bridge.path>${settings.localRepository}/com/vaadin</swing-bridge.path>
     </properties>
     
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
+        <version>4.0.3</version>
         <relativePath/>
     </parent>
 
@@ -183,11 +183,4 @@
             </build>
         </profile>
     </profiles>
-    
-    <pluginRepositories>
-        <pluginRepository>
-            <id>vaadin-prereleases</id>
-            <url>https://maven.vaadin.com/vaadin-prereleases</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
