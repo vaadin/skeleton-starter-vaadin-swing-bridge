@@ -100,7 +100,7 @@
                     <jvmArguments>
                         --patch-module java.desktop=${swing-bridge.path}/swing-bridge-patch/${swing-bridge.version}/swing-bridge-patch-${swing-bridge.version}.jar
                         -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}/swing-bridge-graphics-${swing-bridge.version}.jar
-                        --add-reads java.desktop=ALL-UNNAMED
+                        --add-reads=java.desktop=ALL-UNNAMED
                         --add-exports=java.desktop/sun.font=ALL-UNNAMED
                         --add-exports=java.desktop/sun.awt=ALL-UNNAMED
                         --add-exports=java.desktop/sun.awt.dnd=ALL-UNNAMED
@@ -169,7 +169,7 @@
                             <jvmArguments>
                                 --patch-module java.desktop=${swing-bridge.path}/swing-bridge-patch/${swing-bridge.version}/swing-bridge-patch-${swing-bridge.version}.jar
                                 -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}/swing-bridge-graphics-${swing-bridge.version}.jar
-                                --add-reads java.desktop=ALL-UNNAMED
+                                --add-reads=java.desktop=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.font=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.awt=ALL-UNNAMED
                                 --add-exports=java.desktop/sun.awt.dnd=ALL-UNNAMED
