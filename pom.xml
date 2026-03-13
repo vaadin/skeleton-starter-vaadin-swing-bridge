@@ -105,7 +105,6 @@
                         --add-exports=java.desktop/sun.font=ALL-UNNAMED
                         --add-exports=java.desktop/sun.awt=ALL-UNNAMED
                         --add-exports=java.desktop/sun.awt.dnd=ALL-UNNAMED
-                        --add-exports=java.desktop/sun.awt.dnd.peer=ALL-UNNAMED
                         --add-exports=java.base/sun.nio.cs=ALL-UNNAMED
                         --add-exports=java.desktop/sun.java2d=ALL-UNNAMED
                         --add-exports=java.desktop/sun.java2d.pipe=ALL-UNNAMED
