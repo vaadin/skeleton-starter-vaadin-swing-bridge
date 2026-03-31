@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!-- Project from https://start.vaadin.com/454493bd-4c1f-414d-bed8-1c1d7a48f4be -->
+    
     <groupId>com.example</groupId>
     <artifactId>skeleton-starter-vaadin-swing-bridge</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -9,16 +9,16 @@
     
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
-        <vaadin.version>25.1.0</vaadin.version>
-        <swing-bridge.version>1.1.0</swing-bridge.version>
+        <vaadin.version>25.1.1</vaadin.version>
+        <swing-bridge.version>1.1.1</swing-bridge.version>
         <swing-bridge.path>${settings.localRepository}/com/vaadin</swing-bridge.path>
     </properties>
     
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.4</version>
-        <relativePath/>
+        <version>4.0.5</version>
+        <relativePath />
     </parent>
 
     <dependencyManagement>
@@ -58,7 +58,7 @@
 
         <dependency>
             <groupId>com.vaadin</groupId>
-            <!-- Replace artifactId with vaadin-core to use only free components -->
+            
             <artifactId>vaadin</artifactId>
         </dependency>
         <dependency>
@@ -97,7 +97,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <!-- all JVM flags as one space-separated string -->
+                    
                     <jvmArguments>
                         --patch-module java.desktop=${swing-bridge.path}/swing-bridge-patch/${swing-bridge.version}/swing-bridge-patch-${swing-bridge.version}.jar
                         -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}/swing-bridge-graphics-${swing-bridge.version}.jar
@@ -122,10 +122,10 @@
                         -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
                     </jvmArguments>
 
-                    <!-- JVM -D system properties -->
+                    
                     <systemPropertyVariables>
                         <java.awt.headless>false</java.awt.headless>
-                        <!--<applibs.dir>${project.basedir}/some-lib-dir</applibs.dir>-->
+                        
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
