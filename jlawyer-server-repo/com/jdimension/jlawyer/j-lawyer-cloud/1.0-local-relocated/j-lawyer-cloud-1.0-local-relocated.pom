@@ -1,0 +1,87 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- IMPORTANT: match the coordinates in your repo folder -->
+    <!-- From your screenshot it looks like: com/jdimension/jlawyer/j-lawyer-cloud/1.0-local -->
+    <groupId>com.jdimension.jlawyer</groupId>
+    <artifactId>j-lawyer-cloud</artifactId>
+    <version>1.0-local-relocated</version>
+    <packaging>jar</packaging>
+
+    <name>j-lawyer-cloud (Jackson relocated)</name>
+
+    <dependencies>
+        <!-- Depend on the original fat jar -->
+        <dependency>
+            <groupId>com.jdimension.jlawyer</groupId>
+            <artifactId>j-lawyer-cloud</artifactId>
+            <version>1.0-local</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Don't generate a reduced pom; you're managing this repo manually -->
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <!-- IMPORTANT: attach instead of replace -->
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>relocated</shadedClassifierName>
+
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.fasterxml.jackson</pattern>
+                                    <shadedPattern>com.jdimension.shaded.jackson</shadedPattern>
+                                </relocation>
+                            </relocations>
+
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Deploy the relocated jar back into your project-local repo folder -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.3</version>
+                <configuration>
+                    <altDeploymentRepository>
+                        local-repo::default::file://${project.basedir}/../jlawyer-server-repo
+                    </altDeploymentRepository>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Tell this repack build where to find your project-local repo -->
+    <repositories>
+        <repository>
+            <id>jlawyer-local</id>
+            <url>file://${project.basedir}/../jlawyer-server-repo</url>
+        </repository>
+    </repositories>
+
+</project>

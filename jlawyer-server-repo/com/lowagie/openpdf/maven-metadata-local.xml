@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.lowagie</groupId>
+  <artifactId>openpdf</artifactId>
+  <versioning>
+    <release>1.3.22-local</release>
+    <versions>
+      <version>1.3.22-local</version>
+    </versions>
+    <lastUpdated>20250925120105</lastUpdated>
+  </versioning>
+</metadata>
