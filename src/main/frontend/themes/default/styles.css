@@ -1,1 +1,29 @@
-/* Add your styles here */
+/* Full-height layout for SwingBridge canvas */
+vaadin-app-layout {
+    height: 100vh;
+}
+
+/* Blue drawer matching j-lawyer sidebar theme */
+vaadin-app-layout::part(drawer) {
+    background: linear-gradient(180deg, #2a6fa0 0%, #1e5a85 100%);
+    color: white;
+}
+
+/* SideNav styling for dark drawer */
+vaadin-app-layout::part(drawer) vaadin-side-nav-item {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+vaadin-app-layout::part(drawer) vaadin-side-nav-item::part(item) {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+vaadin-app-layout::part(drawer) vaadin-side-nav-item[active]::part(item) {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Prevent double scrollbars - Swing canvas handles its own scrolling */
+vaadin-app-layout [content] {
+    overflow: hidden;
+}

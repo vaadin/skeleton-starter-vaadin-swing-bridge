@@ -1,0 +1,14 @@
+package com.example.swingbridge.views;
+
+import com.example.swingbridge.ui.MainLayout;
+import com.example.swingbridge.ui.SwingEditorView;
+import com.jdimension.jlawyer.bridge.JLawyerNavigation;
+import com.vaadin.flow.router.Route;
+
+@Route(value = "mail/email", layout = MainLayout.class)
+public class EmailView extends SwingEditorView {
+    @Override
+    protected void onSwingReady(JLawyerNavigation nav) {
+        nav.showEmail();
+    }
+}

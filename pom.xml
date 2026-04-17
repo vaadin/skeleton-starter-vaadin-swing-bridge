@@ -102,6 +102,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.jdimension.jlawyer</groupId>
+            <artifactId>j-lawyer-bridge-api</artifactId>
+            <version>1.0-local</version>
+        </dependency>
+
         <!-- from local repo: START -->
         <dependency>
             <groupId>de.governikus.bea</groupId>
