@@ -3,9 +3,6 @@ package com.example.swingbridge.ui;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -13,166 +10,204 @@ import javax.swing.UIManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jdimension.jlawyer.bridge.JLawyerNavigation;
+import com.jdimension.jlawyer.client.JKanzleiGUIBridge;
+import com.jdimension.jlawyer.client.JKanzleiGUIBridgeMetadata;
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.modernization.swing.bridge.component.SwingBridge;
+import com.vaadin.modernization.swing.bridge.interop.BridgeHandle;
 import com.vaadin.modernization.swing.graphics.SwingBridgeToolkit;
 
 /**
- * Base class for Vaadin views that delegate to a Swing editor panel
- * via SwingBridge. Each subclass specifies which Swing view to show
- * by implementing {@link #onSwingReady(JLawyerNavigation)}.
+ * Base class for Vaadin views that delegate to a Swing editor panel via
+ * SwingBridge.
  * <p>
- * SwingBridge handles single-instance per session: creating a new
- * SwingBridge component in each view reuses the existing Swing app.
+ * Subclasses implement {@link #navigateSwing(JKanzleiGUIBridge)} to call
+ * the Swing show* method that performs the actual editor swap once Vaadin
+ * navigation has been approved.
  * <p>
- * A polling fallback ensures hideModuleBar + onSwingReady are called
- * even if the SwingBridge lifecycle hooks don't fire (e.g., when the
- * user takes a long time to log in and the JFrame lookup times out).
+ * As a {@link BeforeLeaveObserver} the base class postpones every Vaadin
+ * route change, asks Swing whether it's OK to leave the current editor via
+ * {@code gui.confirmLeaveCurrentEditor()}, and only proceeds when Swing
+ * reports success — so the validation / save-before-exit dialogs that live
+ * in {@code EditorsRegistry.canLeaveCurrentEditor()} now also gate Vaadin-
+ * driven navigation.
+ * <p>
+ * For the very first navigation in a session (no current Swing editor)
+ * the bridge isn't ready yet, so {@code beforeLeave} skips the
+ * postpone-and-await flow.
  */
-public abstract class SwingEditorView extends VerticalLayout {
+public abstract class SwingEditorView extends VerticalLayout
+        implements BeforeLeaveObserver, BeforeEnterObserver {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SwingEditorView.class);
-    private static final String MAIN_CLASS = "com.jdimension.jlawyer.client.Main";
-
-    private ScheduledExecutorService poller;
-    private volatile boolean swingReady;
+    private static final Logger LOG = LoggerFactory
+            .getLogger(SwingEditorView.class);
 
     /**
-     * Called when the Swing app is ready. Runs on the correct Swing EDT.
-     * Implement this to navigate to the desired Swing editor panel.
+     * Set by {@link #cancelNavigation} to signal the target view's
+     * {@link #beforeEnter(BeforeEnterEvent)} to forward back to the source.
+     * We have to call {@code action.proceed()} to unstick Vaadin's client-
+     * side router (postpone-without-proceed silently drops subsequent
+     * {@code RouterLink} clicks), but we don't want the target to actually
+     * attach — that would attach a different Swing editor and cause a
+     * visible flicker.
      */
-    protected abstract void onSwingReady(JLawyerNavigation nav);
+    private static volatile Class<? extends com.vaadin.flow.component.Component> pendingCancelRedirect;
+
+    private final SwingBridge bridge;
+
+    /**
+     * One-shot guard: set when the cancel path triggers a re-navigation to
+     * ourselves. The re-fired beforeLeave consumes this flag and passes
+     * through without re-running the leave check.
+     */
+    private boolean cancelInProgress = false;
+
+    /**
+     * Implemented by each leaf view to call its Swing show* method. Called
+     * from {@link #onAttach} after Vaadin navigation has already been
+     * approved by {@code beforeLeave}.
+     */
+    protected abstract void navigateSwing(JKanzleiGUIBridge gui);
+
+    /**
+     * Optional hook for post-attach setup (e.g.
+     * {@code interop().registerCallback(...)}). Default: no-op.
+     */
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
+    }
 
     public SwingEditorView() {
         setSizeFull();
+        bridge = new SwingBridge(
+                JKanzleiGUIBridgeMetadata.SWING_MAIN_CLASS) {
+            @Override
+            protected void beforeInit(Component component) {
+                applyMacOsLafWorkaround(component);
+            }
+        };
+        bridge.setSizeFull();
+        add(bridge);
+        expand(bridge);
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        Class<? extends com.vaadin.flow.component.Component> redirect = pendingCancelRedirect;
+        if (redirect != null) {
+            // The source view's cancel path proceeded the postponed action
+            // to unstick Vaadin's client; forward back to source so the
+            // target never actually attaches.
+            pendingCancelRedirect = null;
+            event.forwardTo(redirect);
+        }
+    }
+
+    @Override
+    public void beforeLeave(BeforeLeaveEvent event) {
+        if (consumeReentrantCancel()) {
+            return;
+        }
+        if (!bridgeReady()) {
+            return;
+        }
+        awaitSwingApproval(event);
+    }
+
+    private boolean consumeReentrantCancel() {
+        if (cancelInProgress) {
+            cancelInProgress = false;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean bridgeReady() {
+        return bridge().isReady();
+    }
+
+    private void awaitSwingApproval(BeforeLeaveEvent event) {
+        ContinueNavigationAction action = event.postpone();
+        bridge().requestAsync(JKanzleiGUIBridge::confirmLeaveCurrentEditor)
+                .whenComplete((approved, err) -> {
+                    if (err != null) {
+                        LOG.error("[bridge] confirmLeave failed", err);
+                        return;
+                    }
+                    getUI().ifPresent(ui -> ui.access(
+                            () -> applyDecision(approved, action)));
+                });
+    }
+
+    private static BridgeHandle<JKanzleiGUIBridge> bridge() {
+        return SwingBridge.interop().of(JKanzleiGUIBridge.class);
+    }
+
+    private void applyDecision(Boolean approved,
+            ContinueNavigationAction action) {
+        if (Boolean.TRUE.equals(approved)) {
+            action.proceed();
+        } else {
+            cancelNavigation(action);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void cancelNavigation(ContinueNavigationAction action) {
+        // Cancel: we MUST call action.proceed() to unstick Vaadin's
+        // client-side router (postpone-without-proceed silently drops
+        // subsequent RouterLink clicks). pendingCancelRedirect tells the
+        // target's beforeEnter to forwardTo back here, so the target never
+        // renders.
+        pendingCancelRedirect =
+                (Class<? extends com.vaadin.flow.component.Component>) getClass();
+        cancelInProgress = true;
+        action.proceed();
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
         super.onAttach(event);
-        swingReady = false;
-
-        SwingBridge bridge = createBridge();
-        bridge.setSizeFull();
-        removeAll();
-        add(bridge);
-        expand(bridge);
-
-        // Polling fallback: covers the case where afterInit doesn't
-        // fire (e.g., first view, user takes >5s to log in).
-        // When afterInit DOES fire, it sets swingReady=true and the
-        // poller stops on the next tick.
-        scheduleSwingReadyCheck(bridge, event.getUI());
+        SwingBridge.interop()
+                .onReady(JKanzleiGUIBridge.class, gui -> {
+                    gui.hideModuleBar();
+                    navigateSwing(gui);
+                    onSwingReady(gui);
+                });
     }
 
-    @Override
-    protected void onDetach(DetachEvent event) {
-        super.onDetach(event);
-        shutdownPoller();
-    }
-
-    private void shutdownPoller() {
-        if (poller != null && !poller.isShutdown()) {
-            poller.shutdown();
-        }
-    }
-
-    private void scheduleSwingReadyCheck(SwingBridge bridge, UI ui) {
-        shutdownPoller();
-        poller = Executors.newSingleThreadScheduledExecutor();
-        poller.scheduleAtFixedRate(() -> {
-            if (swingReady) {
-                poller.shutdown();
-                return;
-            }
-            try {
-                ui.access(() -> {
-                    Component component = bridge.getComponent();
-                    if (component instanceof JLawyerNavigation nav) {
-                        swingReady = true;
-                        poller.shutdown();
-                        SwingBridgeToolkit.targetThreadGroup(component)
-                                .ifPresent(tg -> new Thread(tg, () ->
-                                        EventQueue.invokeLater(() -> {
-                                            nav.hideModuleBar();
-                                            onSwingReady(nav);
-                                        })
-                                ).start());
+    private static void applyMacOsLafWorkaround(Component component) {
+        SwingBridgeToolkit.targetThreadGroup(component).ifPresent(
+                threadGroup -> {
+                    try {
+                        EventQueue.invokeAndWait(() -> {
+                            System.clearProperty(
+                                    "apple.awt.application.name");
+                            System.clearProperty(
+                                    "com.apple.mrj.application.apple.menu.about.name");
+                            System.setProperty(
+                                    "apple.laf.useScreenMenuBar", "false");
+                            UIManager.put("apple.laf.useScreenMenuBar",
+                                    Boolean.FALSE);
+                            var laf = UIManager.getLookAndFeel();
+                            try {
+                                UIManager.setLookAndFeel(
+                                        laf.getClass().getName());
+                            } catch (Exception exc) {
+                                LOG.error("LAF reinstall error", exc);
+                            }
+                            SwingUtilities.updateComponentTreeUI(component);
+                        });
+                    } catch (InterruptedException
+                            | InvocationTargetException e) {
+                        LOG.error("beforeInit error", e);
+                        throw new RuntimeException(e);
                     }
                 });
-            } catch (Exception e) {
-                // UI might be detached; poller will be shut down in onDetach
-                LOG.debug("Polling check skipped", e);
-                poller.shutdown();
-            }
-        }, 1, 1, TimeUnit.SECONDS);
-    }
-
-    private void dispatchToSwingEdt(Component component,
-            JLawyerNavigation nav) {
-        SwingBridgeToolkit.targetThreadGroup(component)
-                .ifPresent(tg -> new Thread(tg, () ->
-                        EventQueue.invokeLater(() -> {
-                            nav.hideModuleBar();
-                            onSwingReady(nav);
-                        })
-                ).start());
-    }
-
-    private SwingBridge createBridge() {
-        return new SwingBridge(MAIN_CLASS) {
-            @Override
-            protected void beforeInit(Component component) {
-                SwingBridgeToolkit.targetThreadGroup(component)
-                        .ifPresent(threadGroup -> {
-                            try {
-                                EventQueue.invokeAndWait(() -> {
-                                    System.clearProperty(
-                                            "apple.awt.application.name");
-                                    System.clearProperty(
-                                            "com.apple.mrj.application.apple.menu.about.name");
-                                    System.setProperty(
-                                            "apple.laf.useScreenMenuBar",
-                                            "false");
-                                    UIManager.put(
-                                            "apple.laf.useScreenMenuBar",
-                                            Boolean.FALSE);
-                                    var laf = UIManager.getLookAndFeel();
-                                    try {
-                                        UIManager.setLookAndFeel(
-                                                laf.getClass().getName());
-                                    } catch (Exception exc) {
-                                        LOG.error("LAF reinstall error", exc);
-                                    }
-                                    SwingUtilities
-                                            .updateComponentTreeUI(component);
-
-                                    // Hide module bar synchronously before
-                                    // init() starts the frame updater
-                                    if (component instanceof JLawyerNavigation nav) {
-                                        nav.hideModuleBar();
-                                    }
-                                });
-                            } catch (InterruptedException
-                                    | InvocationTargetException e) {
-                                LOG.error("beforeInit error", e);
-                                throw new RuntimeException(e);
-                            }
-                        });
-            }
-
-            @Override
-            protected void afterInit(Component component) {
-                if (component instanceof JLawyerNavigation nav) {
-                    // Mark ready so the poller stops
-                    swingReady = true;
-                    dispatchToSwingEdt(component, nav);
-                }
-            }
-        };
     }
 }
