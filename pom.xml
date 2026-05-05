@@ -102,12 +102,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.jdimension.jlawyer</groupId>
-            <artifactId>j-lawyer-bridge-api</artifactId>
-            <version>1.0-local</version>
-        </dependency>
-
         <!-- from local repo: START -->
         <dependency>
             <groupId>de.governikus.bea</groupId>
@@ -234,6 +228,36 @@
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
         <plugins>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>swing-bridge-codegen-maven-plugin</artifactId>
+                <version>${swing-bridge.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-bridge</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-bridge-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/swing-bridge</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
