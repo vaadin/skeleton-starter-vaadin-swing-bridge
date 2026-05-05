@@ -11,7 +11,9 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -36,17 +38,32 @@ public class CityLovDialog extends Dialog {
     public CityLovDialog(String initialQuery, Consumer<CityDataBean> onPick) {
         this.onPick = onPick;
         setHeaderTitle("PLZ / Ort");
+        setDraggable(true);
         setWidth("32rem");
         setHeight("28rem");
 
+        // Match SwingBridgeDialog header chrome so the LOV looks consistent
+        // when stacked on top of Swing-rendered dialogs.
+        getElement().executeJs(
+                "this.$.overlay.$.overlay.style.lineHeight = '0'");
+        getElement().executeJs(
+                "this.$.overlay.$.overlay.querySelector('header').style.padding = '0 4px 0 0'");
+        getElement().executeJs(
+                "this.$.overlay.$.overlay.querySelector('div[part~=\"title\"]').style.fontSize = 'smaller'");
+
         queryField.setPlaceholder("Query");
         queryField.setValue(initialQuery == null ? "" : initialQuery);
-        queryField.setWidthFull();
-
-        Button searchButton = new Button(VaadinIcon.SEARCH.create(), e -> search());
-        searchButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        queryField.setSuffixComponent(searchButton);
         queryField.addKeyPressListener(Key.ENTER, e -> search());
+
+        Icon searchIcon = VaadinIcon.SEARCH.create();
+        searchIcon.setColor("var(--lumo-primary-contrast-color)");
+        Button searchButton = new Button(searchIcon, e -> search());
+        searchButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        HorizontalLayout queryRow = new HorizontalLayout(queryField, searchButton);
+        queryRow.setWidthFull();
+        queryRow.setAlignItems(FlexComponent.Alignment.END);
+        queryRow.expand(queryField);
 
         grid.addColumn(CityDataBean::getZipCode).setHeader("PLZ").setAutoWidth(true);
         grid.addColumn(CityDataBean::getCity).setHeader("Ort").setFlexGrow(1);
@@ -54,7 +71,7 @@ public class CityLovDialog extends Dialog {
         grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER);
         grid.addItemDoubleClickListener(e -> useSelection(e.getItem()));
 
-        VerticalLayout content = new VerticalLayout(queryField, grid);
+        VerticalLayout content = new VerticalLayout(queryRow, grid);
         content.setSizeFull();
         content.setPadding(false);
         content.setSpacing(true);
@@ -82,12 +99,8 @@ public class CityLovDialog extends Dialog {
 
     private void search() {
         String query = queryField.getValue();
-        if (query == null || query.isBlank()) {
-            grid.setItems();
-            return;
-        }
         SwingBridge.interop().of(JKanzleiGUIBridge.class)
-                .requestAsync(b -> b.searchCityData(query))
+                .requestAsync(b -> b.searchCityData(query == null ? "" : query))
                 .whenComplete((rows, err) -> getUI().ifPresent(ui -> ui.access(() -> {
                     if (err != null) {
                         grid.setItems();
