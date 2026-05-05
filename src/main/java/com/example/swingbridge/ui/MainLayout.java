@@ -1,6 +1,13 @@
 package com.example.swingbridge.ui;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.example.swingbridge.views.*;
+import com.jdimension.jlawyer.client.JKanzleiGUIBridge;
+import com.jdimension.jlawyer.client.events.CityChooser;
+import com.jdimension.jlawyer.persistence.CityDataBean;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
@@ -9,9 +16,15 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.Layout;
+import com.vaadin.flow.shared.Registration;
+import com.vaadin.modernization.swing.bridge.annotations.Dispatch;
+import com.vaadin.modernization.swing.bridge.annotations.VaadinCallback;
+import com.vaadin.modernization.swing.bridge.component.SwingBridge;
 
 @Layout
 public class MainLayout extends AppLayout {
+
+    private Registration cityChooserRegistration;
 
     public MainLayout() {
         DrawerToggle toggle = new DrawerToggle();
@@ -124,5 +137,37 @@ public class MainLayout extends AppLayout {
         nav.addItem(research);
 
         return nav;
+    }
+
+    @Override
+    protected void onAttach(AttachEvent event) {
+        super.onAttach(event);
+        cityChooserRegistration = SwingBridge.interop()
+                .of(JKanzleiGUIBridge.class)
+                .registerCallback(this);
+    }
+
+    @Override
+    protected void onDetach(DetachEvent event) {
+        if (cityChooserRegistration != null) {
+            cityChooserRegistration.remove();
+            cityChooserRegistration = null;
+        }
+        super.onDetach(event);
+    }
+
+    /**
+     * Handles Swing-side city-picker requests by opening a Vaadin
+     * {@link CityLovDialog}. Returns the future synchronously to the
+     * Swing thread (via {@code Dispatch.ACCESS_SYNCHRONOUSLY}); the
+     * future itself completes later when the user picks or cancels.
+     */
+    @VaadinCallback(observerFor = CityChooser.class,
+            dispatch = Dispatch.ACCESS_SYNCHRONOUSLY)
+    public CompletableFuture<CityDataBean> choose(String currentPlz) {
+        CompletableFuture<CityDataBean> result = new CompletableFuture<>();
+        CityLovDialog dialog = new CityLovDialog(currentPlz, result::complete);
+        dialog.open();
+        return result;
     }
 }
