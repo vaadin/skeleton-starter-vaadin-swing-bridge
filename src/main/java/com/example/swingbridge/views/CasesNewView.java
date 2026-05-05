@@ -8,6 +8,7 @@ import com.jdimension.jlawyer.client.JKanzleiGUIBridge;
 import com.jdimension.jlawyer.client.events.CityChooser;
 import com.jdimension.jlawyer.persistence.CityDataBean;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.modernization.swing.bridge.annotations.Dispatch;
@@ -27,6 +28,7 @@ import com.vaadin.modernization.swing.bridge.component.SwingBridge;
  * etc.) don't carry chooser plumbing they don't need. {@code /cases/search}
  * would need its own copy if its Beteiligte flow is exercised.
  */
+@PageTitle("Cases / New")
 @Route(value = "cases/new", layout = MainLayout.class)
 public class CasesNewView extends SwingEditorView {
 

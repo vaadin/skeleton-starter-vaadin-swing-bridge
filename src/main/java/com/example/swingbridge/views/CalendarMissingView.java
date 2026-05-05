@@ -9,11 +9,13 @@ import com.jdimension.jlawyer.persistence.ArchiveFileBean;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.modernization.swing.bridge.annotations.VaadinCallback;
 import com.vaadin.modernization.swing.bridge.component.SwingBridge;
 
+@PageTitle("Calendar / Missing")
 @Route(value = "calendar/missing", layout = MainLayout.class)
 public class CalendarMissingView extends SwingEditorView {
 
