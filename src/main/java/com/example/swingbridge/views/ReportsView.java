@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "research/reports", layout = MainLayout.class)
 public class ReportsView extends SwingEditorView {
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
         gui.showReports();
     }
 }

@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "mail/email", layout = MainLayout.class)
 public class EmailView extends SwingEditorView {
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
         gui.showEmail();
     }
 }

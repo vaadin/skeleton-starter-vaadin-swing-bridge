@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "mail/scans", layout = MainLayout.class)
 public class ScansView extends SwingEditorView {
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
         gui.showScans();
     }
 }

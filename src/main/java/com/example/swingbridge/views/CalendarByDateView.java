@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "calendar/by-date", layout = MainLayout.class)
 public class CalendarByDateView extends SwingEditorView {
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
         gui.showCalendarByDate();
     }
 }

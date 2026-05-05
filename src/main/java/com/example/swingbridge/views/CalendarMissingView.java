@@ -28,14 +28,11 @@ public class CalendarMissingView extends SwingEditorView {
     private Registration registration;
 
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
-        gui.showCalendarMissing();
-    }
-
-    @Override
     protected void onSwingReady(JKanzleiGUIBridge gui) {
-        registration = SwingBridge.interop().registerCallback(this,
-                ArchiveFileReviewsMissingPanelBridge.class);
+        gui.showCalendarMissing();
+        registration = SwingBridge.interop()
+                .of(ArchiveFileReviewsMissingPanelBridge.class)
+                .registerCallback(this);
     }
 
     @Override

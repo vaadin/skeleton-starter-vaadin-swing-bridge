@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "mail/dispatch", layout = MainLayout.class)
 public class DispatchView extends SwingEditorView {
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
         gui.showDispatch();
     }
 }

@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "addresses/new", layout = MainLayout.class)
 public class AddressesNewView extends SwingEditorView {
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
         gui.showAddressesNew();
     }
 }

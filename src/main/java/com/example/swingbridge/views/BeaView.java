@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "mail/bea", layout = MainLayout.class)
 public class BeaView extends SwingEditorView {
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
         gui.showBea();
     }
 }

@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "research/fulltext", layout = MainLayout.class)
 public class FullTextSearchView extends SwingEditorView {
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
         gui.showFullTextSearch();
     }
 }

@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "desktop", layout = MainLayout.class)
 public class DesktopView extends SwingEditorView {
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
+    protected void onSwingReady(JKanzleiGUIBridge gui) {
         gui.showDesktop();
     }
 }

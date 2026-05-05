@@ -27,9 +27,9 @@ import com.vaadin.modernization.swing.graphics.SwingBridgeToolkit;
  * Base class for Vaadin views that delegate to a Swing editor panel via
  * SwingBridge.
  * <p>
- * Subclasses implement {@link #navigateSwing(JKanzleiGUIBridge)} to call
- * the Swing show* method that performs the actual editor swap once Vaadin
- * navigation has been approved.
+ * Subclasses implement {@link #onSwingReady(JKanzleiGUIBridge)} — typically
+ * to call the Swing show* method that performs the actual editor swap, and
+ * to register any {@code @VaadinCallback} handlers the view declares.
  * <p>
  * As a {@link BeforeLeaveObserver} the base class postpones every Vaadin
  * route change, asks Swing whether it's OK to leave the current editor via
@@ -69,18 +69,12 @@ public abstract class SwingEditorView extends VerticalLayout
     private boolean cancelInProgress = false;
 
     /**
-     * Implemented by each leaf view to call its Swing show* method. Called
-     * from {@link #onAttach} after Vaadin navigation has already been
-     * approved by {@code beforeLeave}.
+     * Implemented by each leaf view. Called once the bridge is ready (and
+     * after the base class has called {@link JKanzleiGUIBridge#hideModuleBar()}).
+     * The view typically navigates to its Swing editor and registers any
+     * {@code @VaadinCallback} handlers it declares.
      */
-    protected abstract void navigateSwing(JKanzleiGUIBridge gui);
-
-    /**
-     * Optional hook for post-attach setup (e.g.
-     * {@code interop().registerCallback(...)}). Default: no-op.
-     */
-    protected void onSwingReady(JKanzleiGUIBridge gui) {
-    }
+    protected abstract void onSwingReady(JKanzleiGUIBridge gui);
 
     public SwingEditorView() {
         setSizeFull();
@@ -176,7 +170,6 @@ public abstract class SwingEditorView extends VerticalLayout
         SwingBridge.interop()
                 .onReady(JKanzleiGUIBridge.class, gui -> {
                     gui.hideModuleBar();
-                    navigateSwing(gui);
                     onSwingReady(gui);
                 });
     }

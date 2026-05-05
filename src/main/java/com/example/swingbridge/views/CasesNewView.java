@@ -35,12 +35,8 @@ public class CasesNewView extends SwingEditorView {
     private Registration cityChooserRegistration;
 
     @Override
-    protected void navigateSwing(JKanzleiGUIBridge gui) {
-        gui.showCasesNew();
-    }
-
-    @Override
     protected void onSwingReady(JKanzleiGUIBridge gui) {
+        gui.showCasesNew();
         cityChooserRegistration = SwingBridge.interop()
                 .of(JKanzleiGUIBridge.class)
                 .registerCallback(this);
