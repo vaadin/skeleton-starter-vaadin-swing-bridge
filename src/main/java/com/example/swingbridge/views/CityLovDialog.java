@@ -38,10 +38,23 @@ public class CityLovDialog extends Dialog {
 
     public CityLovDialog(String initialQuery, Consumer<CityDataBean> onPick) {
         this.onPick = onPick;
+
         setHeaderTitle("PLZ / Ort");
         setDraggable(true);
+        setResizable(true);
         setWidth("32rem");
         setHeight("28rem");
+        setCloseOnOutsideClick(false);
+        // Drop the Dialog's default body padding so the tinted content
+        // layout extends to all edges (left/right/bottom).
+        getElement().setAttribute("theme", "no-padding");
+        
+        getElement()
+                .executeJs("this.$.overlay.$.overlay.style.lineHeight = '0'");
+        getElement().executeJs(
+                "this.$.overlay.$.overlay.querySelector('header').style.padding = '0 4px 0 0'");
+        getElement().executeJs(
+                "this.$.overlay.$.overlay.querySelector('div[part~=\"title\"]').style.fontSize = 'smaller'");
 
         // Close button on the header — same shape as SwingBridgeDialog uses.
         Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create(),
@@ -65,6 +78,7 @@ public class CityLovDialog extends Dialog {
 
         HorizontalLayout queryRow = new HorizontalLayout(queryField, searchButton);
         queryRow.setWidthFull();
+        queryRow.setPadding(false);
         queryRow.setAlignItems(FlexComponent.Alignment.END);
         queryRow.expand(queryField);
 
@@ -75,13 +89,13 @@ public class CityLovDialog extends Dialog {
         grid.addItemDoubleClickListener(e -> useSelection(e.getItem()));
 
         VerticalLayout content = new VerticalLayout(queryRow, grid);
+        content.getStyle().set("background", "var(--lumo-contrast-5pct)");
         content.setSizeFull();
-        content.setPadding(true);
         content.setSpacing(true);
         content.expand(grid);
-        // Subtle tint to visually separate the body from the white header.
-        content.getStyle().set("background", "var(--lumo-contrast-5pct)");
         add(content);
+
+        this.getElement().getStyle().set("background", "var(--lumo-contrast-5pct)");
 
         Button cancel = new Button("Cancel", e -> closeWith(null));
         Button ok = new Button("OK", e -> {
