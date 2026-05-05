@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import com.jdimension.jlawyer.client.JKanzleiGUIBridge;
 import com.jdimension.jlawyer.persistence.CityDataBean;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -42,14 +43,16 @@ public class CityLovDialog extends Dialog {
         setWidth("32rem");
         setHeight("28rem");
 
-        // Match SwingBridgeDialog header chrome so the LOV looks consistent
-        // when stacked on top of Swing-rendered dialogs.
-        getElement().executeJs(
-                "this.$.overlay.$.overlay.style.lineHeight = '0'");
-        getElement().executeJs(
-                "this.$.overlay.$.overlay.querySelector('header').style.padding = '0 4px 0 0'");
-        getElement().executeJs(
-                "this.$.overlay.$.overlay.querySelector('div[part~=\"title\"]').style.fontSize = 'smaller'");
+        // Close button on the header — same shape as SwingBridgeDialog uses.
+        Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create(),
+                e -> closeWith(null));
+        closeButton.setMaxWidth(25, Unit.PIXELS);
+        closeButton.setMaxHeight(25, Unit.PIXELS);
+        closeButton.getStyle().set("margin-left", "auto");
+        closeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY,
+                ButtonVariant.LUMO_ERROR);
+        closeButton.getElement().setAttribute("tabindex", "-1");
+        getHeader().add(closeButton);
 
         queryField.setPlaceholder("Query");
         queryField.setValue(initialQuery == null ? "" : initialQuery);
@@ -73,9 +76,11 @@ public class CityLovDialog extends Dialog {
 
         VerticalLayout content = new VerticalLayout(queryRow, grid);
         content.setSizeFull();
-        content.setPadding(false);
+        content.setPadding(true);
         content.setSpacing(true);
         content.expand(grid);
+        // Subtle tint to visually separate the body from the white header.
+        content.getStyle().set("background", "var(--lumo-contrast-5pct)");
         add(content);
 
         Button cancel = new Button("Cancel", e -> closeWith(null));
