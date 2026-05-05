@@ -8,7 +8,6 @@ import com.jdimension.jlawyer.client.JKanzleiGUIBridge;
 import com.jdimension.jlawyer.client.events.CityChooser;
 import com.jdimension.jlawyer.persistence.CityDataBean;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
@@ -62,19 +61,7 @@ public class CasesNewView extends SwingEditorView {
             dispatch = Dispatch.ACCESS_SYNCHRONOUSLY)
     public CompletableFuture<CityDataBean> choose(String currentPlz) {
         CompletableFuture<CityDataBean> result = new CompletableFuture<>();
-        CityLovDialog dialog = new CityLovDialog(currentPlz, result::complete);
-        // Attach at UI root rather than letting Vaadin auto-attach inside
-        // the active SwingBridgeDialog's content slot — nesting causes
-        // dragging the LOV to also drag the parent dialog because the
-        // Vaadin drag handlers on both overlays share inline top/left.
-        UI ui = UI.getCurrent();
-        ui.add(dialog);
-        dialog.addOpenedChangeListener(e -> {
-            if (!e.isOpened()) {
-                ui.remove(dialog);
-            }
-        });
-        dialog.open();
+        new CityLovDialog(currentPlz, result::complete).open();
         return result;
     }
 }

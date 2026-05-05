@@ -40,7 +40,6 @@ public class CityLovDialog extends Dialog {
         this.onPick = onPick;
 
         setHeaderTitle("PLZ / Ort");
-        setDraggable(true);
         setResizable(true);
         setWidth("32rem");
         setHeight("28rem");
@@ -48,13 +47,54 @@ public class CityLovDialog extends Dialog {
         // Drop the Dialog's default body padding so the tinted content
         // layout extends to all edges (left/right/bottom).
         getElement().setAttribute("theme", "no-padding");
-        
+
         getElement()
                 .executeJs("this.$.overlay.$.overlay.style.lineHeight = '0'");
         getElement().executeJs(
                 "this.$.overlay.$.overlay.querySelector('header').style.padding = '0 4px 0 0'");
         getElement().executeJs(
                 "this.$.overlay.$.overlay.querySelector('div[part~=\"title\"]').style.fontSize = 'smaller'");
+
+        // Custom drag handler bound to the LOV's overlay header.
+        //
+        // We can't use Vaadin Dialog's built-in setDraggable(true) here
+        // because Vaadin auto-attaches new dialogs into the active
+        // overlay's content slot. When chooseCity opens this LOV from
+        // inside an active SwingBridgeDialog chain, the LOV's
+        // vaadin-dialog host ends up nested inside the parent dialog's
+        // overlay structure. With both dialogs marked draggable, a
+        // pointerdown on the LOV header bubbles up and triggers the
+        // parent's drag handler too — both end up applying the same
+        // top/left absolute position to their own [part="overlay"]
+        // inner elements, so the parent dialog jumps to align with the
+        // LOV's drop point.
+        //
+        // The custom handler below is bound to OUR overlay's header
+        // and updates only OUR [part="overlay"] inner element's inline
+        // top/left. Because we never enable Vaadin's drag mode, the
+        // parent's drag handler isn't woken up by our pointer events.
+        getElement().executeJs(
+                "const inner = this.$.overlay.$.overlay;"
+                + "const header = inner.querySelector('header');"
+                + "header.style.cursor = 'move';"
+                + "header.addEventListener('pointerdown', e => {"
+                + "  if (e.target.closest('vaadin-button, button, [tabindex]')) return;"
+                + "  e.preventDefault();"
+                + "  const rect = inner.getBoundingClientRect();"
+                + "  const startX = e.clientX, startY = e.clientY;"
+                + "  const startLeft = rect.left, startTop = rect.top;"
+                + "  const onMove = ev => {"
+                + "    inner.style.position = 'absolute';"
+                + "    inner.style.left = (startLeft + ev.clientX - startX) + 'px';"
+                + "    inner.style.top = (startTop + ev.clientY - startY) + 'px';"
+                + "  };"
+                + "  const onUp = () => {"
+                + "    document.removeEventListener('pointermove', onMove);"
+                + "    document.removeEventListener('pointerup', onUp);"
+                + "  };"
+                + "  document.addEventListener('pointermove', onMove);"
+                + "  document.addEventListener('pointerup', onUp);"
+                + "});");
 
         // Close button on the header — same shape as SwingBridgeDialog uses.
         Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create(),
