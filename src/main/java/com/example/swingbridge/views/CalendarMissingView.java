@@ -12,8 +12,8 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
-import com.vaadin.modernization.swing.bridge.annotations.VaadinCallback;
-import com.vaadin.modernization.swing.bridge.component.SwingBridge;
+import com.vaadin.swingbridge.interop.VaadinCallback;
+import com.vaadin.swingbridge.SwingBridge;
 
 @PageTitle("Calendar / Missing")
 @Route(value = "calendar/missing", layout = MainLayout.class)

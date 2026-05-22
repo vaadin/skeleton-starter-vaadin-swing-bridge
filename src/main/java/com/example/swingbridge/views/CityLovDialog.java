@@ -18,13 +18,13 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.modernization.swing.bridge.component.SwingBridge;
+import com.vaadin.swingbridge.SwingBridge;
 
 /**
  * Vaadin replacement for j-lawyer's Swing {@code CitySearchDialog}.
  * Renders the ZIP/City picker as a Vaadin {@code Dialog} that sources its
  * rows from the Swing-side {@code searchCityData} method via
- * {@link com.vaadin.modernization.swing.bridge.interop.BridgeHandle#requestAsync}.
+ * {@link com.vaadin.swingbridge.interop.BridgeHandle#requestAsync}.
  * <p>
  * The dialog completes the supplied {@code Consumer<CityDataBean>} exactly
  * once with the picked bean (or {@code null} on Cancel / dialog close).

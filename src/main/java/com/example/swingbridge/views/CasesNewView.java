@@ -11,9 +11,9 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
-import com.vaadin.modernization.swing.bridge.annotations.Dispatch;
-import com.vaadin.modernization.swing.bridge.annotations.VaadinCallback;
-import com.vaadin.modernization.swing.bridge.component.SwingBridge;
+import com.vaadin.swingbridge.interop.Dispatch;
+import com.vaadin.swingbridge.interop.VaadinCallback;
+import com.vaadin.swingbridge.SwingBridge;
 
 /**
  * Cases ▸ New editor. Beyond rendering the Swing

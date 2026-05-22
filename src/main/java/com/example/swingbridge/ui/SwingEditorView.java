@@ -19,9 +19,8 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.modernization.swing.bridge.component.SwingBridge;
-import com.vaadin.modernization.swing.bridge.interop.BridgeHandle;
-import com.vaadin.modernization.swing.graphics.SwingBridgeToolkit;
+import com.vaadin.swingbridge.SwingBridge;
+import com.vaadin.swingbridge.interop.BridgeHandle;
 
 /**
  * Base class for Vaadin views that delegate to a Swing editor panel via
@@ -175,32 +174,26 @@ public abstract class SwingEditorView extends VerticalLayout
     }
 
     private static void applyMacOsLafWorkaround(Component component) {
-        SwingBridgeToolkit.targetThreadGroup(component).ifPresent(
-                threadGroup -> {
+        SwingBridge.runInAppContext(component, () -> {
+            try {
+                EventQueue.invokeAndWait(() -> {
+                    System.clearProperty("apple.awt.application.name");
+                    System.clearProperty(
+                            "com.apple.mrj.application.apple.menu.about.name");
+                    System.setProperty("apple.laf.useScreenMenuBar", "false");
+                    UIManager.put("apple.laf.useScreenMenuBar", Boolean.FALSE);
+                    var laf = UIManager.getLookAndFeel();
                     try {
-                        EventQueue.invokeAndWait(() -> {
-                            System.clearProperty(
-                                    "apple.awt.application.name");
-                            System.clearProperty(
-                                    "com.apple.mrj.application.apple.menu.about.name");
-                            System.setProperty(
-                                    "apple.laf.useScreenMenuBar", "false");
-                            UIManager.put("apple.laf.useScreenMenuBar",
-                                    Boolean.FALSE);
-                            var laf = UIManager.getLookAndFeel();
-                            try {
-                                UIManager.setLookAndFeel(
-                                        laf.getClass().getName());
-                            } catch (Exception exc) {
-                                LOG.error("LAF reinstall error", exc);
-                            }
-                            SwingUtilities.updateComponentTreeUI(component);
-                        });
-                    } catch (InterruptedException
-                            | InvocationTargetException e) {
-                        LOG.error("beforeInit error", e);
-                        throw new RuntimeException(e);
+                        UIManager.setLookAndFeel(laf.getClass().getName());
+                    } catch (Exception exc) {
+                        LOG.error("LAF reinstall error", exc);
                     }
+                    SwingUtilities.updateComponentTreeUI(component);
                 });
+            } catch (InterruptedException | InvocationTargetException e) {
+                LOG.error("beforeInit error", e);
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
