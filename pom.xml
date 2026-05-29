@@ -9,8 +9,8 @@
     
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
-        <vaadin.version>25.1.1</vaadin.version>
-        <swing-bridge.version>1.1.2</swing-bridge.version>
+        <vaadin.version>25.2.0-beta1</vaadin.version>
+        <swing-bridge.version>1.2.0-beta1</swing-bridge.version>
         <swing-bridge.path>${settings.localRepository}/com/vaadin</swing-bridge.path>
     </properties>
     
@@ -20,6 +20,13 @@
         <version>4.0.5</version>
         <relativePath/>
     </parent>
+    
+    <pluginRepositories>
+    	<pluginRepository>
+    		<id>vaadin-prereleases</id>
+    		<url>https://maven.vaadin.com/vaadin-prereleases</url>
+    	</pluginRepository>
+    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>
@@ -80,6 +87,18 @@
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
         <plugins>
+	        <plugin>
+	            <groupId>com.vaadin</groupId>
+	            <artifactId>swing-bridge-codegen-maven-plugin</artifactId>
+	            <version>${swing-bridge.version}</version>
+	            <executions>
+	                <execution>
+	                    <goals>
+	                        <goal>generate-bridge</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+	        </plugin>
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
