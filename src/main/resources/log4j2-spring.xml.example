@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Optional: per-session log attribution for SwingBridge.
+
+  This file is inert as shipped. To use it:
+
+    1. Rename it to `log4j2-spring.xml` (drop the `.example` suffix).
+    2. Remove the `log4j-slf4j2-impl` exclusion from the `swing-bridge-flow`
+       dependency in `pom.xml` — without it nothing binds Log4j2, so this
+       configuration is never read.
+    3. Optionally set `-Dswingbridge.includeUserInLogs=true` to have the user's
+       name rendered as well as the run ID. It is off by default because a user
+       name is personal data.
+
+  Why you would want it: every browser session runs its own copy of the Swing
+  application inside the same JVM, so without attribution their log lines are
+  interleaved with no way to tell them apart.
+
+  Two mechanisms are available, and a real deployment normally picks one:
+
+    %swingSession     the pattern converter. Discovered through the plugin
+                      descriptor inside swing-bridge-flow.jar, so no `packages`
+                      attribute is needed.
+    %X{swingSession}  the context-data entry, injected at the logging call site.
+                      Stays correct under async appenders, where formatting
+                      happens on a different thread.
+
+  The same pair exists for the user name: %swingUser and %X{swingUser}. Both
+  render `-` until `swingbridge.includeUserInLogs` is enabled. Lines emitted by
+  the host application rather than by a hosted Swing application render `-` too.
+
+  The console appender deliberately carries no session token: console output is
+  attributed at the stream level by `-Dswingbridge.consoleLogPrefix=true`, and
+  using one mechanism per channel avoids double-tagging every line.
+-->
+<Configuration>
+  <Appenders>
+    <!-- follow="true" honors System.setOut, so lines written from the Swing
+         application's own threads pass through the prefixing stream that
+         swingbridge.consoleLogPrefix installs. -->
+    <Console name="CONSOLE" target="SYSTEM_OUT" follow="true">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5p [%15.15t] %-40.40c{1.} : %m%n"/>
+    </Console>
+    <RollingFile name="FILE" fileName="target/application.log"
+                 filePattern="target/application.%i.log">
+      <PatternLayout pattern="%d %-5p [%swingSession] [%swingUser] [%c{1}] %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+    <Root level="INFO">
+      <AppenderRef ref="CONSOLE"/>
+      <AppenderRef ref="FILE"/>
+    </Root>
+  </Loggers>
+</Configuration>
