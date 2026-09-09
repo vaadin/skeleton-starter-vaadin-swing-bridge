@@ -8,9 +8,11 @@
     <packaging>jar</packaging>
     
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
+        <!-- The Spring Boot parent derives maven.compiler.release from
+             java.version; setting maven.compiler.source alone has no effect. -->
+        <java.version>21</java.version>
         <vaadin.version>25.2.2</vaadin.version>
-        <swing-bridge.version>1.2.2</swing-bridge.version>
+        <swing-bridge.version>1.3.0</swing-bridge.version>
         <swing-bridge.path>${settings.localRepository}/com/vaadin</swing-bridge.path>
     </properties>
     
@@ -97,7 +99,15 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <!-- all JVM flags as one space-separated string -->
+                    <!-- All JVM flags as one space-separated string. Do not put
+                         XML comments inside the element: its content is passed
+                         to the JVM verbatim.
+
+                         The last line is the debug agent for `mvn
+                         spring-boot:run` — attach an IDE debugger to
+                         localhost:5005. It is bound to loopback on purpose;
+                         `address=*:5005` would accept connections from the
+                         network. -->
                     <jvmArguments>
                         --patch-module java.desktop=${swing-bridge.path}/swing-bridge-patch/${swing-bridge.version}/swing-bridge-patch-${swing-bridge.version}.jar
                         -Xbootclasspath/a:${swing-bridge.path}/swing-bridge-graphics/${swing-bridge.version}/swing-bridge-graphics-${swing-bridge.version}.jar
@@ -120,13 +130,48 @@
                         --add-opens=java.desktop/sun.awt=ALL-UNNAMED
                         --add-opens=java.desktop/java.awt.dnd=ALL-UNNAMED
                         --add-opens=java.base/java.lang=ALL-UNNAMED
-                        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+                        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5005
                     </jvmArguments>
 
                     <!-- JVM -D system properties -->
                     <systemPropertyVariables>
+                        <!-- Required: SwingBridge needs a non-headless AWT toolkit. -->
                         <java.awt.headless>false</java.awt.headless>
+
+                        <!-- Directory scanned for the Swing application's JARs.
+                             Defaults to applibs/ next to the project. -->
                         <!--<applibs.dir>${project.basedir}/some-lib-dir</applibs.dir>-->
+
+                        <!-- SwingBridge tuning. All optional; the defaults below
+                             are what you get if you leave these commented out.
+                             See the Configuration and Display and Rendering pages
+                             of the SwingBridge documentation. -->
+
+                        <!-- Screen size reported to the Swing application:
+                             per-user (default) or a fixed <width>x<height>. -->
+                        <!--<swingbridge.screenSize>per-user</swingbridge.screenSize>-->
+
+                        <!-- Render at the browser's device pixel ratio for crisp
+                             text on HiDPI displays: off (default), auto, or a
+                             decimal such as 2. Costs heap per window. -->
+                        <!--<swingbridge.hidpi>auto</swingbridge.hidpi>-->
+
+                        <!-- Back-buffer pixel format: adaptive (default), argb,
+                             or 565 to halve back-buffer memory at the cost of
+                             color fidelity. -->
+                        <!--<swingbridge.backBufferType>adaptive</swingbridge.backBufferType>-->
+
+                        <!-- The canvas takes browser focus when it appears, so
+                             typing works without clicking it first. Default true. -->
+                        <!--<swingbridge.autoFocusOnAttach>true</swingbridge.autoFocusOnAttach>-->
+
+                        <!-- Prefix each Swing application's console output with
+                             its run ID, to tell concurrent users apart. -->
+                        <!--<swingbridge.consoleLogPrefix>true</swingbridge.consoleLogPrefix>-->
+
+                        <!-- Hide the exception details the launch-failure view
+                             shows when the Swing application cannot start. -->
+                        <!--<swingbridge.errorReporting.enabled>false</swingbridge.errorReporting.enabled>-->
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
