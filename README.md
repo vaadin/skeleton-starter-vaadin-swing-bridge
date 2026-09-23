@@ -22,7 +22,7 @@ It is also possible to configure this in the `pom.xml`. There is a commented pla
 
 ## Prerequisites
 - **JDK 21 or later.** SwingBridge patches `java.desktop` at runtime and needs a Java 21 toolchain.
-- A desktop-capable environment. SwingBridge renders Swing components on the server, so it runs with `java.awt.headless=false` and needs a working AWT toolkit (on a headless Linux server, an X server such as Xvfb).
+- **No display server.** SwingBridge replaces the native AWT toolkit with its own and renders straight into the browser. It runs with `java.awt.headless=false`, but it never connects to a display, so a headless Linux server needs no X server, no Xvfb and no `DISPLAY` variable. The JVM does still load the X client libraries while AWT initializes, so a minimal server or container image must have them installed (on Debian and Ubuntu: `libx11-6 libxext6 libxi6 libxrender1 libxtst6`). If startup fails with `Can't connect to X11 window server`, the SwingBridge JVM flags are missing from the command line, not a display.
 
 Maven itself does not need to be installed: the project ships the Maven wrapper, so `./mvnw` (or `mvnw.cmd` on Windows) works out of the box. The commands below use `mvn`; substitute `./mvnw` if you prefer the wrapper.
 
